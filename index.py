@@ -29,7 +29,7 @@ app.title = 'Dashboard Pokemon'
 app.layout = html.Div([
     html.H1('Dashboard Pokemon'),
     html.H3('''
-        Created By : Baron P. Hartono
+        Created By : Diast S. F.
     '''
     ),
     dcc.Tabs(id="tabs", value='tab-1', children=[

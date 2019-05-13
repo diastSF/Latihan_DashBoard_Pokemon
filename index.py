@@ -13,6 +13,8 @@ from src.components.tab2.view import renderIsiTab2
 from src.components.tab3.view import renderIsiTab3
 from src.components.tab4.view import renderIsiTab4
 from src.components.tab5.view import renderIsiTab5
+from src.components.tab6.view import renderIsiTab6
+from src.components.tab7.view import renderIsiTab7
 
 #________IMPORT CALLBACK FUNCTION________#
 from src.components.tab1.callbacks import callbacksortingtable, callbackfiltertable
@@ -20,6 +22,8 @@ from src.components.tab2.callbacks import callbackupdatecatgraph
 from src.components.tab3.callbacks import callbackupdatescattergraph
 from src.components.tab4.callbacks import callbackupdatepiegraph
 from src.components.tab5.callbacks import callbackupdatehistogram
+from src.components.tab6.callbacks import callbackpredict
+from src.components.tab7.callbacks import callbacksortingtablehistory, callbackfiltertablehistory
 
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -40,7 +44,9 @@ app.layout = html.Div([
         dcc.Tab(label='Categorical Plots', value='tab-2', children=renderIsiTab2()),
         dcc.Tab(label='Scatter Plot', value='tab-3', children=renderIsiTab3()),
         dcc.Tab(label='Pie Chart', value='tab-4', children=renderIsiTab4()),
-        dcc.Tab(label='Histogram', value='tab-5', children=renderIsiTab5())
+        dcc.Tab(label='Histogram', value='tab-5', children=renderIsiTab5()),
+        dcc.Tab(label='Test Predict', value='tab-6', children=renderIsiTab6()),
+        dcc.Tab(label='History Predictions', value='tab-7', children=renderIsiTab7())
     ],style={
         'fontFamily': 'system-ui'
     }, content_style={
@@ -129,7 +135,43 @@ def update_pie_plot(group):
 def update_hist_plot(x, hue, std):
     return callbackupdatehistogram(x, hue, std)
 
-    
+#_________________CALLBACK TAB 6__________________
+
+@app.callback(
+    Output(component_id='outputpredict', component_property='children'),
+    [Input('predictsearch', 'n_clicks')],
+    [State('predictname', 'value'),
+    State('predicttype1', 'value'),
+    State('predicttype2', 'value'),
+    State('predictgeneration', 'value'),
+    State('predicttotal', 'value'),
+    State('predicthp', 'value'),
+    State('predictattack', 'value'),
+    State('predictdefense', 'value'),
+    State('predictspatk', 'value'),
+    State('predictspdef', 'value'),
+    State('predictspeed', 'value')]
+)
+def update_predict(n_clicks,name,type1,type2,generation,total,hp,attack,defense,spatk,spdef,speed):
+    return callbackpredict(n_clicks,name,type1,type2,generation,total,hp,attack,defense,spatk,spdef,speed)
+
+#___________________CALLBACK TAB 7__________________
+
+@app.callback(
+    Output('table-history-prediction', "data"),
+    [Input('table-history-prediction', "pagination_settings"),
+     Input('table-history-prediction', "sorting_settings")])
+
+def update_sort_history_table(pagination_settings, sorting_settings):
+    return callbacksortingtablehistory(pagination_settings, sorting_settings)
+
+@app.callback(
+    Output(component_id='tablehistorydiv', component_property='children'),
+    [Input('filtercreatedbyhistory', 'value'),
+    Input('filterrowhistory', 'value')]
+)
+def update_table_history(createdby,maxrows):
+    return callbackfiltertablehistory(createdby,maxrows)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
